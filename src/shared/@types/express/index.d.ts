@@ -7,11 +7,17 @@ type WorkspaceContext = {
   role: IBusinessMemberDocument["role"];
 };
 
+declare global {
+  namespace Express {
+    interface User extends Pick<
+      IUserDocument,
+      "_id" | "email" | "name" | "username"
+    > {}
 
-declare module "express-serve-static-core" {
-  interface Request {
-    user?: Pick<IUserDocument, "_id" | "email" | "name" | "username">;
-    workspace?: WorkspaceContext;
+    interface Request {
+      user?: User;
+      workspace?: WorkspaceContext;
+    }
   }
 }
 
