@@ -15,7 +15,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: nheroop/business-management-system-backend
+  IMAGE_NAME: heyneerav/business-management-system-backend
 
 jobs:
   deploy:
