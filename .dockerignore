@@ -13,3 +13,6 @@ helm-charts
 .editorconfig
 .idea
 coverage*
+dist
+compose.yml
+npm-debug.log
