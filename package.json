@@ -1,5 +1,5 @@
 {
-  "name": "business-management-system-backend",
+  "name": "bms-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NHeroOP/Business-Management-System-Backend.git"
+    "url": "git+https://github.com/NHeroOP/Bms-Backend.git"
   },
   "keywords": [],
   "author": "Neerav Gupta",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NHeroOP/Business-Management-System-Backend/issues"
+    "url": "https://github.com/NHeroOP/Bms-Backend/issues"
   },
-  "homepage": "https://github.com/NHeroOP/Business-Management-System-Backend#readme",
+  "homepage": "https://github.com/NHeroOP/Bms-Backend#readme",
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",
     "@scalar/express-api-reference": "^0.10.30",

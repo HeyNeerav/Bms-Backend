@@ -15,7 +15,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: heyneerav/business-management-system-backend
+  IMAGE_NAME: heyneerav/bms-backend
 
 jobs:
   deploy:
@@ -59,7 +59,7 @@ jobs:
 
           set -euxo pipefail
 
-          cd ~/repos/Business-Management-System-Backend
+          cd ~/repos/Bms-Backend
 
           echo "Current commit:"
           git rev-parse HEAD
