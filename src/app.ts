@@ -41,7 +41,7 @@ app.use(
 app.use(express.static("public"));
 app.use(cookieParser());
 app.use(passport.initialize());
-app.use(globalLimiter);
+app.use("/api/v1", globalLimiter);
 
 import userRouter from "./modules/user/user.route.js";
 import authRouter from "./modules/auth/auth.route.js";
