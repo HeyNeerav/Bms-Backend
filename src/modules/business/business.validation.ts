@@ -5,7 +5,10 @@ export const createBusinessSchema = z.object({
   email: z.email("Invalid email address").optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
-  website: z.url("Invalid URL").optional(),
+  website: z.string().regex(
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/,
+    "Please enter a valid website address"
+  ).optional(),
   description: z.string().optional()
 });
 
