@@ -20,11 +20,9 @@ export const createInvoiceSchema = z.object({
     .max(100, "Tax cannot be greater than 100")
     .optional(),
   notes: z.string().optional(),
-  dueDate: z
-    .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: "Invalid date format",
-    })
+  dueDate: z.coerce
+    .date("Invalid date format")
+    .refine((date) => date > new Date(), "Due date must be in the future")
     .optional(),
 });
 
