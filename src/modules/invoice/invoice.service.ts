@@ -154,14 +154,14 @@ export const createInvoice = async (
 };
 
 export const findInvoices = async (payload: FindInvoicesPayload) => {
-  const { businessId, email, name, ...options } = payload;
+  const { businessId, search, ...options } = payload;
 
   const sortBy = allowedInvoiceSortFields.includes(options.sortBy ?? "")
     ? options.sortBy!
     : "issuedDate";
   const sortOrder = options.sortOrder ?? -1;
 
-  const invoiceAggregate = Invoice.aggregate([
+  const pipeline: any[] = [
     {
       $match: {
         businessId: new Types.ObjectId(businessId),
@@ -192,12 +192,20 @@ export const findInvoices = async (payload: FindInvoicesPayload) => {
         },
       },
     },
-    {
+  ];
+
+  if (search) {
+    pipeline.push({
       $match: {
-        ...(email && { "client.email": { $regex: escapeRegex(email), $options: "i" } }),
-        ...(name && { "client.name": { $regex: escapeRegex(name), $options: "i" } }),
+        $or: [
+          { "client.name": { $regex: escapeRegex(search), $options: "i" } },
+          { "client.email": { $regex: escapeRegex(search), $options: "i" } },
+        ],
       },
-    },
+    });
+  }
+
+  pipeline.push(
     {
       $sort: {
         [sortBy]: sortOrder,
@@ -208,12 +216,15 @@ export const findInvoices = async (payload: FindInvoicesPayload) => {
         metadata: 0,
         __v: 0,
       },
-    },
-  ]);
+    }
+  );
+
+  const invoiceAggregate = Invoice.aggregate(pipeline);
 
   const invoices = await Invoice.aggregatePaginate(invoiceAggregate, {
     page: options.page || 1,
     limit: options.limit || 10,
+    countQuery: Invoice.aggregate(pipeline)
   });
 
   return invoices;

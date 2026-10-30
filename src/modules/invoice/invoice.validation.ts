@@ -29,8 +29,7 @@ export const createInvoiceSchema = z.object({
 export type CreateInvoiceInput = z.infer<typeof createInvoiceSchema>;
 
 export const getInvoicesSchema = z.object({
-  email: z.email().optional(),
-  name: z.string().optional(),
+  search: z.string().trim().optional(),
   sortBy: z.enum(allowedInvoiceSortFields).optional(),
   sortOrder: z.union([z.literal(1), z.literal(-1)]).optional(),
   page: z.coerce.number().positive().optional(),
