@@ -48,7 +48,7 @@ export const createPayment = async (
 
   try {
     const existingPayment = await Payment.exists({
-      invoiceId,
+      invoice: invoiceId,
       isArchived: false,
       businessId,
       status: PAYMENT_STATUS.SUCCESS,
@@ -75,7 +75,7 @@ export const createPayment = async (
     
     [payment] = await Payment.create([{
       businessId: businessId!,
-      invoiceId,
+      invoice: invoiceId,
       amount,
       createdBy,
       ...(method && { method }),
@@ -111,14 +111,13 @@ export const findPayments = async (
   payload: FindPaymentsPayload
 ) => {
 
-  const { businessId, invoiceId, status, method, fromDate, toDate, sortBy = "paidAt", sortOrder = -1, page=1, limit=10 } = payload;
+  const { businessId, status, method, fromDate, toDate, sortBy = "paidAt", sortOrder = -1, page=1, limit=10 } = payload;
 
-  const paymentAggregate = Payment.aggregate([
+  const pipeline = [
     {
       $match: {
         businessId: businessId,
         isArchived: false,
-        ...(invoiceId && { invoiceId: new Types.ObjectId(invoiceId) }),
         ...(status && { status: status }),
         ...(method && { method: method }),
         ...((fromDate || toDate) && {
@@ -128,16 +127,42 @@ export const findPayments = async (
           }
         })
       }
-    }, {
+    },
+    {
+      $lookup: {
+        from: "invoices",
+        localField: "invoice",
+        foreignField: "_id",
+        as: "invoice",
+        pipeline: [
+          {
+            $project: {
+              invoiceNumber: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        invoice: {
+          $arrayElemAt: ["$invoice", 0],
+        },
+      },
+    },
+    {
       $sort: {
         [sortBy]: sortOrder
       }
     } 
-  ]);
+  ];
+
+  const paymentAggregate = Payment.aggregate(pipeline);
 
   const payments = await Payment.aggregatePaginate(paymentAggregate, {
     page,
     limit,
+    countQuery: Payment.aggregate(pipeline)
   });
 
   return payments;

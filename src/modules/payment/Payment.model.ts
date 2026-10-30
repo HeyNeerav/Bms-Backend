@@ -4,7 +4,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export interface IPayment {
   businessId: Types.ObjectId;
-  invoiceId: Types.ObjectId;
+  invoice: Types.ObjectId;
   amount: number;
   method: PaymentMethod
   status: PaymentStatus;
@@ -27,7 +27,7 @@ const paymentSchema = new Schema<IPayment>(
       index: true,
     },
 
-    invoiceId: {
+    invoice: {
       type: Types.ObjectId,
       ref: "Invoice",
       required: true,
@@ -86,7 +86,7 @@ paymentSchema.index({
 
 paymentSchema.index({
   businessId: 1,
-  invoiceId: 1,
+  invoice: 1,
 });
 
 paymentSchema.index({
