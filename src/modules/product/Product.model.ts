@@ -103,7 +103,12 @@ productSchema.index({
 
 productSchema.index(
   { sku: 1, businessId: 1 },
-  { unique: true, sparse: true },
+  {
+    unique: true,
+    partialFilterExpression: {
+      sku: { $type: 'string' },
+    },
+  },
 );
 
 productSchema.plugin(mongooseAggregatePaginate);

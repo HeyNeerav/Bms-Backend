@@ -91,7 +91,7 @@ export const createProduct = async (
     stockQuantity,
     image,
     ...(description && { description }),
-    ...(sku && { sku }),
+    ...(sku && { sku: sku.trim() }),
     ...(category && { category }),
   });
 
