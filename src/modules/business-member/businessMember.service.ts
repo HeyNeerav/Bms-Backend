@@ -1,12 +1,13 @@
 import { Types } from "mongoose";
 
 import { Business } from "../business/Business.model.js";
-import type { UserIdParam, UpdateMemberInput } from "./businessMember.validation.js";
+import { type UserIdParam, type UpdateMemberInput, type FindMembersInput, allowedMembersSortFields } from "./businessMember.validation.js";
 import { BusinessMember, type IBusinessMemberDocument } from "./BusinessMember.model.js";
 
 import type { BusinessRole } from "@/consts.js";
 import { ApiError } from "@/shared/utils/ApiError.js";
 import { User } from "../user/User.model.js";
+import { escapeRegex } from "@/shared/utils/escapeRegex.js";
 
 type WorkspaceContext = UserIdParam & {
   currUserRole: string;
@@ -17,6 +18,14 @@ type AddMemberParams = Omit<WorkspaceContext, "userId"> & {
   role: BusinessRole;
   email: string;
   // permissions?: string[];
+}
+
+type FindMembersPayload = FindMembersInput & {
+  businessId: Types.ObjectId | string;
+}
+
+type RemoveBusinessPayload = WorkspaceContext & {
+  currUserId: Types.ObjectId | string;
 }
 
 export const addBusinessMember = async (
@@ -51,6 +60,7 @@ export const addBusinessMember = async (
       existingMember.isArchived = false;
       existingMember.role = role;
       // existingMember.permissions = permissions;
+      existingMember.joinedAt = new Date();
       await existingMember.save();
       return existingMember;
     } else {
@@ -72,14 +82,76 @@ export const addBusinessMember = async (
   return newMember;
 };
 
-export const findBusinessMembers = async (
-  businessId: Types.ObjectId | string
-): Promise<IBusinessMemberDocument[]> => {
-  const members = await BusinessMember.find({ businessId, isArchived: false }).populate("userId", "name email");
+export const findBusinessMembers = async (payload: FindMembersPayload) => {
+  const { businessId, search, ...options } = payload;
 
-  if (!members || members.length === 0) {
-    throw new ApiError(404, "No members found for this business");
+  const sortBy = allowedMembersSortFields.includes(options.sortBy ?? "")
+    ? options.sortBy!
+    : "joinedAt";
+  const sortOrder = options.sortOrder ?? -1;
+  
+  const pipeline: any[] = [
+    {
+      $match: {
+        businessId: new Types.ObjectId(businessId),
+        isArchived: false,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+              email: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        user: {
+          $arrayElemAt: ["$user", 0],
+        },
+      },
+    },
+  ]
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { "user.name": { $regex: escapeRegex(search), $options: "i" } },
+          { "user.email": { $regex: escapeRegex(search), $options: "i" } },
+        ],
+      },
+    });
   }
+
+  pipeline.push({
+    $sort: {
+      [sortBy]: sortOrder,
+    },
+  },
+  {
+    $project: {
+      metadata: 0,
+      __v: 0,
+    },
+  })
+
+  const memberAggregate = BusinessMember.aggregate(pipeline);
+
+  const members = await BusinessMember.aggregatePaginate(memberAggregate, {
+    page: options.page || 1,
+    limit: options.limit || 10,
+    countQuery: BusinessMember.aggregate(pipeline)
+  });
 
   return members;
 };
@@ -108,8 +180,10 @@ export const changeMemberRole = async (
 };
 
 export const removeBusinessMember = async (
-  { currUserRole, businessId, userId }: WorkspaceContext
+  payload: RemoveBusinessPayload
 ): Promise<void> => {
+  const { currUserId, currUserRole, businessId, userId } = payload;
+
   if (!businessId || !userId) {
     throw new ApiError(400, "Business ID and User ID are required");
   }
@@ -126,13 +200,13 @@ export const removeBusinessMember = async (
   if (!targetMembership) {
     throw new ApiError(404, "Target member not found in this business");
   }
+  
+  if (targetMembership?.userId.toString() === currUserId.toString()) {
+    throw new ApiError(403, "Users cannot remove themselves from the business");
+  }
 
   if (business.createdBy.toString() === userId) {
     throw new ApiError(403, "Business owners cannot be removed from the business");
-  }
-
-  if (targetMembership?.userId.toString() === userId) {
-    throw new ApiError(403, "Users cannot remove themselves from the business");
   }
 
   if (currUserRole === "ADMIN" && targetMembership?.role === "OWNER") {

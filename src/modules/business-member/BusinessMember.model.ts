@@ -1,6 +1,7 @@
 
 import { BUSINESS_ROLE, type BusinessRole } from "@/consts.js";
-import { Schema, model, Types, type HydratedDocument } from "mongoose";
+import { Schema, model, Types, type HydratedDocument, type AggregatePaginateModel } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export interface IBusinessMember {
   businessId: Types.ObjectId;
@@ -8,6 +9,7 @@ export interface IBusinessMember {
   role: BusinessRole;
   permissions: string[];
   isArchived: boolean;
+  joinedAt: Date;
 }
 
 export type IBusinessMemberDocument = HydratedDocument<IBusinessMember>;
@@ -43,6 +45,11 @@ const businessMemberSchema = new Schema<IBusinessMember>(
       type: Boolean,
       default: false,
     },
+
+    joinedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     timestamps: true,
@@ -54,7 +61,9 @@ businessMemberSchema.index({
   userId: 1,
 }, { unique: true })
 
-export const BusinessMember = model<IBusinessMember>(
+businessMemberSchema.plugin(mongooseAggregatePaginate);
+
+export const BusinessMember = model<IBusinessMember, AggregatePaginateModel<IBusinessMember>>(
   "BusinessMember",
   businessMemberSchema
 );

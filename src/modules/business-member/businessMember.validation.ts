@@ -1,5 +1,8 @@
 import * as z from "zod";
 import { BUSINESS_ROLE } from "@/consts.js";
+import type { Types } from "mongoose";
+
+export const allowedMembersSortFields = ["joinedAt", "role", "email"];
 
 export const inviteMemberSchema = z.object({
   email: z.string().trim().email("Invalid email format").or(z.literal("")),
@@ -9,7 +12,17 @@ export const inviteMemberSchema = z.object({
   // permissions: z.array(z.string()).optional(),
 })
 
-export type InviteMemberInput = z.infer<typeof inviteMemberSchema>;
+export type InviteMemberInput = z.infer<typeof inviteMemberSchema>
+
+export const getMembersSchema = z.object({
+  search: z.string().trim().optional(),
+  sortBy: z.enum(allowedMembersSortFields).optional(),
+  sortOrder: z.union([z.literal(1), z.literal(-1)]).optional(),
+  page: z.coerce.number().positive().optional(),
+  limit: z.coerce.number().positive().optional(),
+})
+
+export type FindMembersInput = z.infer<typeof getMembersSchema>
 
 export const userIdParamSchema = z.object({
   userId: z.string().length(24, "Invalid user ID format"),

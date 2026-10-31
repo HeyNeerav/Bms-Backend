@@ -7,6 +7,7 @@ import {
   removeBusinessMember
 } from "./businessMember.service.js";
 import {
+  getMembersSchema,
   inviteMemberSchema,
   updateMemberSchema,
   userIdParamSchema
@@ -33,7 +34,11 @@ export const inviteMember = asyncHandler(async (req: Request, res: Response) => 
 });
 
 export const getMembers = asyncHandler(async (req: Request, res: Response) => {
-  const members = await findBusinessMembers(req.workspace!.businessId);
+  const query = getMembersSchema.parse(req.query);
+  const members = await findBusinessMembers({
+    businessId: req.workspace!.businessId,
+    ...query,
+  });
   return res.status(200).json(
     new ApiResponse(200, members, "Members retrieved successfully")
   );
@@ -57,6 +62,7 @@ export const updateMemberRole = asyncHandler(async (req: Request, res: Response)
 export const removeMember = asyncHandler(async (req: Request, res: Response) => { 
   const { userId } = userIdParamSchema.parse(req.params);
   await removeBusinessMember({
+    currUserId: req.user!._id,
     currUserRole: req.workspace!.role,
     businessId: req.workspace!.businessId,
     userId,
