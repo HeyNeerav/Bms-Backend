@@ -90,8 +90,6 @@ const invoiceSchema = new Schema<IInvoice>(
     invoiceNumber: {
       type: String,
       required: true,
-      unique: true,
-      index: true,
     },
 
     items: {

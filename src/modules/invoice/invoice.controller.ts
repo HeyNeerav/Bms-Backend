@@ -110,9 +110,10 @@ export const downloadInvoicePdf = asyncHandler(
       invoiceId
     });
 
+    res.setHeader('Content-Disposition', 'inline; filename="invoice.pdf"');
+
     return res
     .contentType("application/pdf")
-    .attachment("invoice.pdf")
     .send(pdf);
   },
 );
