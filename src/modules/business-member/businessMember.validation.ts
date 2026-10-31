@@ -2,7 +2,7 @@ import * as z from "zod";
 import { BUSINESS_ROLE } from "@/consts.js";
 
 export const inviteMemberSchema = z.object({
-  userId: z.string().length(24, "Invalid user ID format"),
+  email: z.string().trim().email("Invalid email format").or(z.literal("")),
   role: z.enum(Object.values(BUSINESS_ROLE), {
     message: "Invalid role. Must be one of OWNER, ADMIN, or EMPLOYEE",
   }),

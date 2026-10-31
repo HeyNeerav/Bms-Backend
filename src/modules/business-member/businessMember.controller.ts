@@ -17,18 +17,18 @@ import { asyncHandler } from "@/shared/utils/asyncHandler.js";
 
 
 export const inviteMember = asyncHandler(async (req: Request, res: Response) => {
-  const { userId, role } = inviteMemberSchema.parse(req.body);
+  const { email, role } = inviteMemberSchema.parse(req.body);
 
   await addBusinessMember({
     role,
     // permissions: body.permissions,
     currUserRole: req.workspace!.role,
     businessId: req.workspace!.businessId,
-    userId,
+    email,
   });
 
   return res.status(200).json(
-    new ApiResponse(200, {}, "Member invited successfully")
+    new ApiResponse(200, {}, "If the user exists, membership invitation has been sent successfully")
   );
 });
 

@@ -24,7 +24,6 @@ router
     requireRole([
       BUSINESS_ROLE.OWNER,
       BUSINESS_ROLE.ADMIN,
-      BUSINESS_ROLE.EMPLOYEE,
     ]),
     getMembers,
   )

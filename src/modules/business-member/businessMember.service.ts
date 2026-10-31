@@ -6,30 +6,40 @@ import { BusinessMember, type IBusinessMemberDocument } from "./BusinessMember.m
 
 import type { BusinessRole } from "@/consts.js";
 import { ApiError } from "@/shared/utils/ApiError.js";
+import { User } from "../user/User.model.js";
 
 type WorkspaceContext = UserIdParam & {
   currUserRole: string;
   businessId: Types.ObjectId | string;
 }
 
-type AddMemberParams = WorkspaceContext & {   
+type AddMemberParams = Omit<WorkspaceContext, "userId"> & {   
   role: BusinessRole;
+  email: string;
   // permissions?: string[];
 }
 
 export const addBusinessMember = async (
   payload: AddMemberParams
-): Promise<IBusinessMemberDocument> => {
-  const { currUserRole, businessId, userId, role } = payload;
+) => {
+  const { currUserRole, businessId, email, role } = payload;
 
-  if (!userId || !role) {
-    throw new ApiError(400, "User ID and Role are required");
+  if (!email || !role) {
+    throw new ApiError(400, "Email and Role are required");
   }
 
 
   if (currUserRole === "ADMIN" && role === "OWNER") {
     throw new ApiError(403, "Admins cannot invite owners to the business");
   }
+
+  const user = await User.findOne({ email: email.trim().toLowerCase() });
+  const userId = user?._id;
+
+  if (!user || !userId) {
+    return;
+  }
+
 
   const existingMember = await BusinessMember.findOne({
     businessId,
