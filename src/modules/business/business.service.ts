@@ -137,7 +137,7 @@ export const findUserBusinesses = async (
     role: { $ne: BUSINESS_ROLE.OWNER },
   }).populate<{
     businessId: Pick<IBusinessDocument, "_id" | "name" | "slug" | "logo">
-  }>("role", {
+  }>({
     path: "businessId",
     select: "_id name slug logo"
   });
