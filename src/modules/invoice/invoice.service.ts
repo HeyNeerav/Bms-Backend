@@ -158,8 +158,8 @@ export const findInvoices = async (payload: FindInvoicesPayload) => {
 
   const sortBy = allowedInvoiceSortFields.includes(options.sortBy ?? "")
     ? options.sortBy!
-    : "issuedDate";
-  const sortOrder = options.sortOrder ?? -1;
+    : "invoiceNumber";
+  const sortOrder = options.sortOrder ?? 1;
 
   const pipeline: any[] = [
     {
@@ -413,7 +413,8 @@ export const generateInvoicePdf = async ({
     isArchived: false,
   })
     .populate("client", "name email phone")
-    .populate("items.productId", "name description price image")
+    .populate("items.productId", "name description image")
+    .populate("businessId", "name address email phone settings")
     .lean();
   
 
