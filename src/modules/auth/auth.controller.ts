@@ -56,7 +56,6 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         200,
         {
           user: userData,
-          accessToken,
         },
         "User logged in successfully",
       ),
@@ -91,10 +90,7 @@ export const refreshAccessToken = asyncHandler(
       .json(
         new ApiResponse(
           200,
-          {
-            accessToken,
-            refreshToken,
-          },
+          {},
           "Access token refreshed successfully",
         ),
       );
