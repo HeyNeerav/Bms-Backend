@@ -281,6 +281,75 @@
           overflow-x: auto;
         }
       }
+
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+
+      @media print {
+        body {
+          padding: 0;
+          background: white;
+        }
+
+        .invoice {
+          max-width: none;
+          border: none;
+          border-radius: 0;
+          overflow: visible;
+        }
+
+        .header {
+          padding: 24px 28px;
+        }
+
+        .body {
+          padding: 24px 28px;
+        }
+
+        .grid {
+          margin-bottom: 20px;
+          gap: 16px;
+        }
+
+        .card {
+          padding: 14px;
+        }
+
+        table {
+          margin-bottom: 20px;
+        }
+
+        th {
+          padding: 10px 12px;
+        }
+
+        td {
+          padding: 12px;
+        }
+
+        .product img {
+          width: 42px;
+          height: 42px;
+        }
+
+        .bottom {
+          gap: 20px;
+        }
+
+        .summary {
+          padding: 16px;
+        }
+
+        .footer {
+          margin-top: 24px;
+        }
+
+        tr {
+          break-inside: avoid;
+        }
+      }
     </style>
   </head>
   <body>

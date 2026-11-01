@@ -64,7 +64,14 @@ export const createPdf = async (
 
     const pdf = await page.pdf({
       format: "A4",
-      printBackground: true,
+        printBackground: true,
+        preferCSSPageSize: true,
+        margin: {
+          top: "10mm",
+          right: "10mm",
+          bottom: "10mm",
+          left: "10mm",
+        },
     });
 
     return pdf;
