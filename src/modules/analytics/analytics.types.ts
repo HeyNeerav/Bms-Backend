@@ -5,7 +5,8 @@ export type AnalyticsPeriod =
   | "30d"
   | "90d"
   | "12m"
-  | "year"
+  | "thisYear"
+  | "lastYear"
   | "lifetime";
 
 export interface AnalyticsOverview {

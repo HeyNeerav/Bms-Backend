@@ -19,7 +19,7 @@ export const getDateRange = (
   lifetimeStartDate = new Date(0),
 ): DateRange => {
   const endDate = now;
-  let startDate: Date;
+  let startDate = new Date(lifetimeStartDate);
 
   switch (period) {
     case "7d":
@@ -42,12 +42,22 @@ export const getDateRange = (
       startDate.setUTCMonth(startDate.getUTCMonth() - 11);
       break;
 
-    case "year":
+    case "12m":
+      startDate = new Date(now);
+      startDate.setUTCFullYear(startDate.getUTCFullYear() - 1);
+      break;
+
+    case "lastYear":
       startDate = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
       break;
 
+    case "lastYear":
+      startDate = new Date(Date.UTC(now.getUTCFullYear() - 1, 0, 1));
+      endDate.setTime(Date.UTC(now.getUTCFullYear(), 0, 1) - 1);
+      break;
+
     case "lifetime":
-      startDate = new Date(lifetimeStartDate.getTime());
+      startDate = new Date(lifetimeStartDate);
       break;
   }
 

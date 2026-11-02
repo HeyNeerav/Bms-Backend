@@ -5,7 +5,8 @@ export const ANALYTICS_PERIODS = [
   "30d",
   "90d",
   "12m",
-  "year",
+  "thisYear",
+  "lastYear",
   "lifetime",
 ] as const;
 
