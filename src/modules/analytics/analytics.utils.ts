@@ -47,7 +47,7 @@ export const getDateRange = (
       startDate.setUTCFullYear(startDate.getUTCFullYear() - 1);
       break;
 
-    case "lastYear":
+    case "thisYear":
       startDate = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
       break;
 
