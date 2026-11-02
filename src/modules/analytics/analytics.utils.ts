@@ -81,8 +81,11 @@ export const getDateRange = (
 };
 
 export const getTrendUnit = (period: AnalyticsPeriod): "day" | "month" =>
-  period === "7d" || period === "30d" ? "day" : "month";
-
+  period === "7d" ||
+    period === "30d" ||
+    period === "90d"
+    ? "day"
+    : "month";
 export const getBucketKey = (date: Date, unit: "day" | "month") => {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
