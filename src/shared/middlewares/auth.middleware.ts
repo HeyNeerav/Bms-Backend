@@ -25,11 +25,19 @@ export const verifyJWT = asyncHandler(
       ) as JwtPayload;
 
       const user = await User.findById(decodedToken._id).select(
-        "-password -refreshToken",
+        "_id, name, email, username, isVerified, isArchived",
       );
 
       if (!user) {
         throw new ApiError(401, "Invalid Access Token");
+      }
+
+      if (!user.isVerified) {
+        throw new ApiError(401, "User is not verified");
+      }
+
+      if (user.isArchived) {
+        throw new ApiError(401, "User account doesn't exist anymore");
       }
 
       req.user = {
