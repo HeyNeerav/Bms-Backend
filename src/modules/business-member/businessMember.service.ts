@@ -24,6 +24,10 @@ type FindMembersPayload = FindMembersInput & {
   businessId: Types.ObjectId | string;
 }
 
+type ChangeMemberRolePayload = WorkspaceContext & UpdateMemberInput & {
+  currentUserId: Types.ObjectId | string;
+}
+
 type RemoveBusinessPayload = WorkspaceContext & {
   currUserId: Types.ObjectId | string;
 }
@@ -157,9 +161,9 @@ export const findBusinessMembers = async (payload: FindMembersPayload) => {
 };
 
 export const changeMemberRole = async (
-  payload: WorkspaceContext & UpdateMemberInput
+  payload: ChangeMemberRolePayload
 ): Promise<void> => {
-  const { currUserRole, businessId, userId, role } = payload;
+  const { currUserRole, currentUserId, businessId, userId, role } = payload;
 
   if (currUserRole === "ADMIN" && role === "OWNER") {
     throw new ApiError(403, "Admins cannot assign owner role to members");
@@ -173,6 +177,21 @@ export const changeMemberRole = async (
 
   if (!member) {
     throw new ApiError(404, "Member not found in this business");
+  }
+
+
+  if (member.userId.toString() === currentUserId.toString()) {
+    throw new ApiError(403, "Users cannot change their own role");
+  }
+
+  const business = await Business.findOne({ _id: businessId, isArchived: false });
+
+  if (!business) {
+    throw new ApiError(404, "Business not found");
+  }
+
+  if (member.role === "OWNER" && business.createdBy.toString() !== currentUserId.toString()) {
+    throw new ApiError(403, "Only the business owner can change the role of another owner");
   }
 
   member.role = role;

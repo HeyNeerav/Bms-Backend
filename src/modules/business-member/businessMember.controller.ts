@@ -49,6 +49,7 @@ export const updateMemberRole = asyncHandler(async (req: Request, res: Response)
   const { userId } = userIdParamSchema.parse(req.params);
   await changeMemberRole({
     role,
+    currentUserId: req.user!._id,
     currUserRole: req.workspace!.role,
     businessId: req.workspace!.businessId,
     userId,
