@@ -6,7 +6,7 @@ export const createBusinessSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   website: z.string().regex(
-    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/,
+    /^(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]{1,63}(?:\.[a-zA-Z0-9-]{1,63})*)\.([a-zA-Z]{2,63})(?:\/[^?\s]*)?(?:\?[^\s]*)?$/,
     "Please enter a valid website address"
   ).optional(),
   description: z.string().optional()
