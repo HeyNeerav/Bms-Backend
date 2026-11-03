@@ -36,9 +36,7 @@ export const registerUserService = async (payload: RegisterPayload) => {
 
   let avatar;
 
-  if (avatarLocalPath) {
-    avatar = await uploadOnCloudinary(avatarLocalPath);
-  }
+
 
   if (userExists) {
     if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
@@ -49,6 +47,9 @@ export const registerUserService = async (payload: RegisterPayload) => {
     
   }
 
+  if (avatarLocalPath) {
+    avatar = await uploadOnCloudinary(avatarLocalPath);
+  }
 
   const user = await User.create({
     name,
@@ -64,7 +65,7 @@ export const registerUserService = async (payload: RegisterPayload) => {
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken",
+    "_id name username email avatar",
   );
 
   if (!createdUser) {
