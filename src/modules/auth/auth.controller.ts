@@ -87,13 +87,7 @@ export const refreshAccessToken = asyncHandler(
       .status(200)
       .cookie("accessToken", accessToken, cookieOptions)
       .cookie("refreshToken", refreshToken, cookieOptions)
-      .json(
-        new ApiResponse(
-          200,
-          {},
-          "Access token refreshed successfully",
-        ),
-      );
+      .json(new ApiResponse(200, {}, "Access token refreshed successfully"));
   },
 );
 
@@ -103,11 +97,15 @@ export const sendVerificationCode = asyncHandler(
 
     await sendVerficationEmail(email);
 
-    return res.status(200).json(new ApiResponse(
-      200,
-      {},
-      "If email exists, verificaiton code will be sent"
-    ))
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          {},
+          "If email exists, verificaiton code will be sent",
+        ),
+      );
   },
 );
 
@@ -117,11 +115,11 @@ export const verifyVerificationCode = asyncHandler(
 
     await verifyVerificationCodeService({ email, code });
 
-    return res.status(200).json(new ApiResponse(
-      200,
-      {},
-      "Verification code verified successfully"
-    ))
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, {}, "Verification code verified successfully"),
+      );
   },
 );
 
@@ -140,10 +138,16 @@ export const resetPassword = asyncHandler(
   async (req: Request, res: Response) => {
     const { token, userId, newPassword } = resetPasswordSchema.parse(req.body);
 
-    await resetPasswordService({ token, userId, newPassword });
+    const { accessToken, refreshToken } = await resetPasswordService({
+      token,
+      userId,
+      newPassword,
+    });
 
     return res
       .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json(new ApiResponse(200, {}, "Password reset successfully"));
   },
 );

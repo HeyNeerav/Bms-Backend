@@ -327,12 +327,15 @@ export const resetPasswordService = async ({
     throw new ApiError(400, "Password reset token has expired");
   }
 
+  
   user.password = newPassword;
   user.passwordChangedAt = new Date();
   user.passwordResetToken = undefined;
   user.passwordResetTokenExpiry = undefined;
 
   await user.save();
+  
+  return await generateTokens(user._id)
 };
 
 export const getCurrentUserService = async (userId: Types.ObjectId) => {
