@@ -1,10 +1,16 @@
 import * as z from "zod";
 
 export const registerSchema = z.object({
-  username: z.string().min(4, "Username must be at least 4 characters"),
+  username: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9_-]{4,16}$/,
+      "Username must be 4 to 16 characters and contain only letters, numbers, underscores, or hyphens",
+    ),
+
   name: z.string().min(3, "Name must be at least 3 characters"),
   email: z.email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters")
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export const registerRequestSchema = registerSchema.extend({
@@ -18,28 +24,39 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 
 export type RegisterPayload = RegisterInput & {
   avatarLocalPath?: string;
-}
+};
 
 export const loginSchema = z.object({
   identifier: z.union([
-    z.string().min(4, "Username must be at least 4 characters").optional(),
-    z.email("Invalid email address").optional()
-  ]),
-  password: z.string().min(6, "Password must be at least 6 characters")
+    z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9_-]{4,16}$/,
+        "Username must be 4 to 16 characters and contain only letters, numbers, underscores, or hyphens",
+      ),
+    z.email("Invalid email address"),
+  ], { 
+    error: "Please enter a valid username or email address" 
+  }),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export const refreshTokenSchema = z.string("Invalid refresh token")
+export const refreshTokenSchema = z.string("Invalid refresh token");
 
-export const sendVerificationEmailSchema = z.email("Invalid email address")
-export type SendVerificationEmailInput = z.infer<typeof sendVerificationEmailSchema>
+export const sendVerificationEmailSchema = z.email("Invalid email address");
+export type SendVerificationEmailInput = z.infer<
+  typeof sendVerificationEmailSchema
+>;
 
 export const verifyVerificationCodeSchema = z.object({
   email: z.email("Invalid email address"),
-  code: z.string().length(6, "Verification code must be 6 characters")
-})
-export type VerifyVerificationCodeInput = z.infer<typeof verifyVerificationCodeSchema>
+  code: z.string().length(6, "Verification code must be 6 characters"),
+});
+export type VerifyVerificationCodeInput = z.infer<
+  typeof verifyVerificationCodeSchema
+>;
 
 export type RefreshTokenInput = z.infer<typeof refreshTokenSchema>;
 
