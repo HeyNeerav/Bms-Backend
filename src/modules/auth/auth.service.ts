@@ -187,7 +187,7 @@ export const sendVerficationEmail = async(
   const user = await User.findOne({ email, isArchived: false });
 
   if (!user) {
-    throw new ApiError(200, "If email exists, a verification code will be sent");
+    return;
   }
 
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -260,7 +260,7 @@ export const forgotPasswordService = async (email: string) => {
   const user = await User.findOne({ email, isArchived: false });
 
   if (!user) {
-    throw new ApiError(200, "If email exists, verificaiton code will be sent");
+    return;
   }
 
   const rawPasswordResetToken = crypto.randomBytes(32).toString("hex");
