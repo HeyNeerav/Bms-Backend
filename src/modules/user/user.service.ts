@@ -28,7 +28,7 @@ export const getUserProfile = async (
   }
 
   const user = await User.findOne({ _id: userId, isArchived: false }).select(
-    "-password -refreshToken -passwordResetToken -passwordResetTokenExpiry -googleId"
+    "_id name username email avatar createdAt updatedAt lastLoginAt isVerified passwordChangedAt"
   );
 
   if (!user) {
@@ -130,22 +130,4 @@ export const updateUserAvatar = async (
     throw new ApiError(404, "User not found");
   }
 
-};
-
-export const findUserById = async (
-  userId: UserIdParam["userId"]
-) => { 
-  if (!userId) { 
-    throw new ApiError(400, "User ID is required");
-  }
-
-  const user = await User.findOne({ _id: userId, isArchived: false }).select(
-    "-password -refreshToken -passwordResetToken -passwordResetTokenExpiry -googleId"
-  );
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-
-  return user;
 };

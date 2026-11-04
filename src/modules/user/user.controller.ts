@@ -2,12 +2,11 @@ import type { Request, Response } from "express";
 
 import {
   changeUserPassword,
-  findUserById,
   getUserProfile,
   updateUserAvatar,
   updateUserProfile
 } from "./user.service.js";
-import { changePasswordSchema, updateProfileSchema, userIdParamSchema } from "./user.validation.js";
+import { changePasswordSchema, updateProfileSchema } from "./user.validation.js";
 
 import { ApiResponse } from "@/shared/utils/ApiResponse.js";
 import { asyncHandler } from "@/shared/utils/asyncHandler.js";
@@ -47,14 +46,5 @@ export const updateAvatar = asyncHandler(async (req: Request, res: Response) => 
 
   return res.status(200).json(
     new ApiResponse(200, {}, "Avatar updated successfully")
-  );
-});
-
-export const getUserById = asyncHandler(async (req: Request, res: Response) => { 
-  const { userId } = userIdParamSchema.parse(req.params);
-  const user = await findUserById(userId);
-
-  return res.status(200).json(
-    new ApiResponse(200, user, "User profile retrieved successfully")
   );
 });

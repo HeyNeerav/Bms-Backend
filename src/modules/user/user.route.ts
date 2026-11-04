@@ -3,7 +3,6 @@ import { Router } from "express";
 import {
   changePassword,
   getMyProfile,
-  getUserById,
   updateAvatar,
   updateMyProfile, 
 } from "./user.controller.js";
@@ -24,7 +23,5 @@ router.route("/change-password")
 
 router.route("/update-avatar")
   .patch(upload.single("avatarUrl"), updateAvatar);
-
-router.route("/:userId").get(getUserById);
 
 export default router;
