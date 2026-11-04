@@ -99,6 +99,10 @@ export const loginUserService = async ({
     throw new ApiError(401, "Invalid username/email or password");
   }
 
+  if (!user.isVerified) {
+    throw new ApiError(401, "User is not verified");
+  }
+
   if (!user.password) {
     throw new ApiError(
       400,
@@ -108,7 +112,7 @@ export const loginUserService = async ({
 
   const isPassValid: boolean = await user.isPasswordCorrect(password);
   if (!isPassValid) {
-    throw new ApiError(401, "Invalid password");
+    throw new ApiError(401, "Invalid username/email or password");
   }
 
   const { accessToken, refreshToken } = await generateTokens(user._id);
@@ -202,7 +206,7 @@ export const sendVerficationEmail = async(
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "NHero <send@noreply.nhero.me>",
+      from: "BMS <no-reply@bms.heyneerav.tech>",
       to: email,
       subject: "Verification Code",
       template: {
@@ -264,6 +268,10 @@ export const forgotPasswordService = async (email: string) => {
     return;
   }
 
+  if (!user.isVerified) {
+    throw new ApiError(401, "User is not verified, please verify first.");
+  }
+
   const rawPasswordResetToken = crypto.randomBytes(32).toString("hex");
   const hashedPasswordResetToken = hashData(rawPasswordResetToken);
 
@@ -278,7 +286,7 @@ export const forgotPasswordService = async (email: string) => {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "NHero <send@noreply.nhero.me>",
+      from: "BMS <no-reply@bms.heyneerav.tech>",
       to: email,
       subject: "Password Reset Request",
       template: {
