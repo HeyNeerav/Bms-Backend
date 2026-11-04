@@ -19,7 +19,7 @@ export const getPaymentsSchema = z.object({
   fromDate: z.coerce.date().optional(),
   toDate: z.coerce.date().optional(),
   sortBy: z.string().optional(),
-  sortOrder: z.union([z.literal(1), z.literal(-1)]).optional(),
+  sortOrder: z.union([z.literal("asc"), z.literal("desc")]).optional(),
   page: z.coerce.number().int().positive("Page must be a positive integer").optional(),
   limit: z.coerce.number().int().positive("Limit must be a positive integer").optional(),
 });

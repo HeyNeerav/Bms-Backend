@@ -159,7 +159,7 @@ export const findInvoices = async (payload: FindInvoicesPayload) => {
   const sortBy = allowedInvoiceSortFields.includes(options.sortBy ?? "")
     ? options.sortBy!
     : "invoiceNumber";
-  const sortOrder = options.sortOrder ?? -1;
+  const sortOrder = options.sortOrder === "asc" ? 1 : -1;
 
   const pipeline: any[] = [
     {

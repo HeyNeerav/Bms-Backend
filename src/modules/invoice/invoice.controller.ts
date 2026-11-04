@@ -12,13 +12,18 @@ import {
 
 import { asyncHandler } from "@/shared/utils/asyncHandler.js";
 import { ApiResponse } from "@/shared/utils/ApiResponse.js";
-import { Types } from "mongoose";
-import { createInvoiceSchema, getInvoicesSchema, invoiceIdParamSchema, updateInvoiceSchema, updateInvoiceStatusSchema } from "./invoice.validation.js";
+import {
+  createInvoiceSchema,
+  getInvoicesSchema,
+  invoiceIdParamSchema,
+  updateInvoiceSchema,
+  updateInvoiceStatusSchema,
+} from "./invoice.validation.js";
 
 export const createInvoice = asyncHandler(
   async (req: Request, res: Response) => {
     const body = createInvoiceSchema.parse(req.body);
-    
+
     await createInvoiceService({
       userId: req.user!._id,
       businessId: req.workspace!.businessId,
@@ -47,7 +52,7 @@ export const getInvoiceById = asyncHandler(
     const { invoiceId } = invoiceIdParamSchema.parse(req.params);
     const invoice = await findInvoiceById({
       businessId: req.workspace!.businessId,
-      invoiceId
+      invoiceId,
     });
 
     return res
@@ -77,7 +82,7 @@ export const deleteInvoice = asyncHandler(
     const { invoiceId } = invoiceIdParamSchema.parse(req.params);
     await archiveInvoice({
       businessId: req.workspace!.businessId,
-      invoiceId
+      invoiceId,
     });
 
     return res
@@ -107,13 +112,11 @@ export const downloadInvoicePdf = asyncHandler(
     const { invoiceId } = invoiceIdParamSchema.parse(req.params);
     const pdf = await generateInvoicePdf({
       businessId: req.workspace!.businessId,
-      invoiceId
+      invoiceId,
     });
 
-    res.setHeader('Content-Disposition', 'inline; filename="invoice.pdf"');
+    res.setHeader("Content-Disposition", 'inline; filename="invoice.pdf"');
 
-    return res
-    .contentType("application/pdf")
-    .send(pdf);
+    return res.contentType("application/pdf").send(pdf);
   },
 );

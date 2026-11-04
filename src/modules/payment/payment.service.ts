@@ -111,9 +111,15 @@ export const findPayments = async (
   payload: FindPaymentsPayload
 ) => {
 
-  const { businessId, status, method, fromDate, toDate, sortBy = "paidAt", sortOrder = -1, page=1, limit=10 } = payload;
+  const { businessId, ...options } = payload;
+  
+  const {  status, method, fromDate, toDate, page = 1, limit = 10  } = options;
+  
+  const sortBy = options.sortBy ?? "paidAt";
+  const sortOrder = options.sortOrder === "asc" ? 1 : -1;
+   
 
-  const pipeline = [
+  const pipeline: any = [
     {
       $match: {
         businessId: businessId,

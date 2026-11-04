@@ -31,7 +31,7 @@ export type CreateInvoiceInput = z.infer<typeof createInvoiceSchema>;
 export const getInvoicesSchema = z.object({
   search: z.string().trim().optional(),
   sortBy: z.enum(allowedInvoiceSortFields).optional(),
-  sortOrder: z.union([z.literal(1), z.literal(-1)]).optional(),
+  sortOrder: z.union([z.literal("asc"), z.literal("desc")]).optional(),
   page: z.coerce.number().positive().optional(),
   limit: z.coerce.number().positive().optional(),
 });
