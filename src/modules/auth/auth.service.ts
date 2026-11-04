@@ -66,7 +66,7 @@ export const registerUserService = async (payload: RegisterPayload) => {
     throw new ApiError(500, "Error while creating user");
   }
 
-  await sendVerficationEmail(user.email);
+  return createdUser;
 };
 
 export const loginUserService = async ({
