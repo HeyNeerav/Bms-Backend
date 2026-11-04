@@ -1,7 +1,7 @@
 export const VERIFICATION_EMAIL_TEMPLATE_ID =
-  "4f0a1478-bd3f-491a-a176-a5872a80c678";
+  "03e8b94c-b7ae-4638-a308-6dcc6c44668f";
 export const INVOICE_SENT_EMAIL_TEMPLATE_ID =
-  "3f91f8b1-ff3f-4beb-849e-adf578e02d17";
+  "0898c0db-abe0-49f3-8f82-f377494ed598";
 
 
 export const BUSINESS_ROLE = {

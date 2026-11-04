@@ -8,5 +8,5 @@ export const cookieOptions = {
   domain: ENV.NODE_ENV === "production" ? ENV.COOKIE_DOMAIN : undefined,
 };
 
-export const PASSWORD_RESET_EMAIL_TEMPLATE_ID = "ea7ca73e-e2aa-4be1-9f85-1fc57e6c6898"
-export const VERIFICATION_EMAIL_TEMPLATE_ID = "4f0a1478-bd3f-491a-a176-a5872a80c678"
+export const PASSWORD_RESET_EMAIL_TEMPLATE_ID = "a6618093-38bc-41f3-878c-7c7763bdfdd8"
+export const VERIFICATION_EMAIL_TEMPLATE_ID = "03e8b94c-b7ae-4638-a308-6dcc6c44668f"
