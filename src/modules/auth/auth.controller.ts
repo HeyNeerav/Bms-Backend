@@ -1,7 +1,11 @@
 import type { Request, Response } from "express";
 
 import { generateTokens } from "./auth.helper.js";
-import { cookieOptions } from "./auth.const.js";
+import {
+  accessTokenCookieOptions,
+  cookieOptions,
+  refreshTokenCookieOptions,
+} from "./auth.const.js";
 import {
   forgotPasswordService,
   loginUserService,
@@ -33,7 +37,13 @@ export const registerUser = asyncHandler(
 
     return res
       .status(201)
-      .json(new ApiResponse(201, {}, "User registered successfully. Please check your email for verification code"));
+      .json(
+        new ApiResponse(
+          201,
+          {},
+          "User registered successfully. Please check your email for verification code",
+        ),
+      );
   },
 );
 
@@ -46,8 +56,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
     .json(
       new ApiResponse(
         200,
@@ -82,8 +92,8 @@ export const refreshAccessToken = asyncHandler(
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, cookieOptions)
-      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken, accessTokenCookieOptions)
+      .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
       .json(new ApiResponse(200, {}, "Access token refreshed successfully"));
   },
 );
@@ -125,8 +135,8 @@ export const resetPassword = asyncHandler(
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, cookieOptions)
-      .cookie("refreshToken", refreshToken, cookieOptions)
+      .cookie("accessToken", accessToken, accessTokenCookieOptions)
+      .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
       .json(new ApiResponse(200, {}, "Password reset successfully"));
   },
 );
@@ -138,8 +148,8 @@ export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOptions)
-    .cookie("refreshToken", refreshToken, cookieOptions)
+    .cookie("accessToken", accessToken, accessTokenCookieOptions)
+    .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
     .json({
       success: true,
       user,

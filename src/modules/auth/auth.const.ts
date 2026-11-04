@@ -8,5 +8,16 @@ export const cookieOptions = {
   domain: ENV.NODE_ENV === "production" ? ENV.COOKIE_DOMAIN : undefined,
 };
 
+export const accessTokenCookieOptions = {
+  ...cookieOptions,
+  maxAge: 15 * 60 * 1000, // 15 minutes
+};
+
+export const refreshTokenCookieOptions = {
+  ...cookieOptions,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
+
+
 export const PASSWORD_RESET_EMAIL_TEMPLATE_ID = "a6618093-38bc-41f3-878c-7c7763bdfdd8"
 export const VERIFICATION_EMAIL_TEMPLATE_ID = "03e8b94c-b7ae-4638-a308-6dcc6c44668f"
