@@ -25,7 +25,7 @@ export const verifyJWT = asyncHandler(
       ) as JwtPayload;
 
       const user = await User.findById(decodedToken._id).select(
-        "_id, name, email, username, isVerified, isArchived",
+        "_id name email username isVerified isArchived"
       );
 
       if (!user) {
