@@ -9,6 +9,7 @@ import {
   refreshAccessToken,
   registerUser,
   resetPassword,
+  sendVerificationCode,
   verifyVerificationCode,
 } from "./auth.controller.js";
 
@@ -23,6 +24,7 @@ router.route("/login").post(loginLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 
+router.route("/verify/send").post(sendVerificationCode)
 router.route("/verify").post(verifyVerificationCode)
 
 

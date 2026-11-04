@@ -13,6 +13,7 @@ import {
   refreshAccessTokenService,
   registerUserService,
   resetPasswordService,
+  sendVerficationEmail,
   verifyVerificationCodeService,
 } from "./auth.service.js";
 import {
@@ -21,6 +22,7 @@ import {
   refreshTokenSchema,
   registerSchema,
   resetPasswordSchema,
+  sendVerificationEmailSchema,
   verifyVerificationCodeSchema,
 } from "./auth.validation.js";
 
@@ -95,6 +97,24 @@ export const refreshAccessToken = asyncHandler(
       .cookie("accessToken", accessToken, accessTokenCookieOptions)
       .cookie("refreshToken", refreshToken, refreshTokenCookieOptions)
       .json(new ApiResponse(200, {}, "Access token refreshed successfully"));
+  },
+);
+
+export const sendVerificationCode = asyncHandler(
+  async (req: Request, res: Response) => {
+    const email = sendVerificationEmailSchema.parse(req.body.email);
+
+    await sendVerficationEmail(email);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          {},
+          "If email exists, verificaiton code will be sent",
+        ),
+      );
   },
 );
 
