@@ -92,7 +92,7 @@ export const findBusinessMembers = async (payload: FindMembersPayload) => {
   const sortBy = allowedMembersSortFields.includes(options.sortBy ?? "")
     ? options.sortBy!
     : "joinedAt";
-  const sortOrder = options.sortOrder ?? -1;
+  const sortOrder = options.sortOrder === "asc" ? 1 : -1;
   
   const pipeline: any[] = [
     {
