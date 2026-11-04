@@ -3,14 +3,12 @@ import passport from "passport";
 
 import {
   forgotPassword,
-  getCurrentUser,
   googleAuth,
   loginUser,
   logoutUser,
   refreshAccessToken,
   registerUser,
   resetPassword,
-  sendVerificationCode,
   verifyVerificationCode,
 } from "./auth.controller.js";
 
@@ -25,16 +23,13 @@ router.route("/login").post(loginLimiter, loginUser);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 
-router.route("/verification-code/send").post(sendVerificationCode)
-router.route("/verification-code/verify").post(verifyVerificationCode)
+router.route("/verify").post(verifyVerificationCode)
 
 
 router.route("/forgot-password")
   .post(forgotPasswordLimiter, forgotPassword);
 router.route("/reset-password")
   .post(resetPasswordLimiter,resetPassword);
-
-router.route("/me").get(verifyJWT, getCurrentUser);
 
 router.route("/google").get(
   passport.authenticate("google", {

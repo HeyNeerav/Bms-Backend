@@ -30,13 +30,7 @@ export const registerUserService = async (payload: RegisterPayload) => {
     $or: [{ username }, { email }],
   });
 
-  // if (!avatarLocalPath) {
-  //   throw new ApiError(400, "Avatar image is required");
-  // }
-
   let avatar;
-
-
 
   if (userExists) {
     if (avatarLocalPath) fs.unlinkSync(avatarLocalPath);
@@ -72,7 +66,7 @@ export const registerUserService = async (payload: RegisterPayload) => {
     throw new ApiError(500, "Error while creating user");
   }
 
-  return createdUser;
+  await sendVerficationEmail(user.email);
 };
 
 export const loginUserService = async ({
@@ -197,7 +191,7 @@ export const sendVerficationEmail = async(
 
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedVerificationCode = hashData(verificationCode);
-  const verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000);
+  const verificationCodeExpiry = new Date(Date.now() + 5 * 60 * 1000);
 
   user.verificationCode = hashedVerificationCode;
   user.verificationCodeExpiry = verificationCodeExpiry;
@@ -345,16 +339,4 @@ export const resetPasswordService = async ({
   await user.save();
   
   return await generateTokens(user._id)
-};
-
-export const getCurrentUserService = async (userId: Types.ObjectId) => {
-  const user = await User.findOne({ _id: userId, isArchived: false }).select(
-    "-password -refreshToken",
-  );
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-
-  return user;
 };

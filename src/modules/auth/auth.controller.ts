@@ -4,11 +4,9 @@ import { generateTokens } from "./auth.helper.js";
 import { cookieOptions } from "./auth.const.js";
 import {
   forgotPasswordService,
-  getCurrentUserService,
   loginUserService,
   logoutUserService,
   refreshAccessTokenService,
-  sendVerficationEmail,
   registerUserService,
   resetPasswordService,
   verifyVerificationCodeService,
@@ -19,7 +17,6 @@ import {
   refreshTokenSchema,
   registerSchema,
   resetPasswordSchema,
-  sendVerificationEmailSchema,
   verifyVerificationCodeSchema,
 } from "./auth.validation.js";
 
@@ -29,14 +26,14 @@ import { ApiResponse } from "@/shared/utils/ApiResponse.js";
 export const registerUser = asyncHandler(
   async (req: Request, res: Response) => {
     const body = registerSchema.parse(req.body);
-    const createdUser = await registerUserService({
+    await registerUserService({
       ...(req.file && { avatarLocalPath: req.file.path }),
       ...body,
     });
 
     return res
       .status(201)
-      .json(new ApiResponse(201, createdUser, "User registered successfully"));
+      .json(new ApiResponse(201, {}, "User registered successfully. Please check your email for verification code"));
   },
 );
 
@@ -91,24 +88,6 @@ export const refreshAccessToken = asyncHandler(
   },
 );
 
-export const sendVerificationCode = asyncHandler(
-  async (req: Request, res: Response) => {
-    const email = sendVerificationEmailSchema.parse(req.body.email);
-
-    await sendVerficationEmail(email);
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          {},
-          "If email exists, verificaiton code will be sent",
-        ),
-      );
-  },
-);
-
 export const verifyVerificationCode = asyncHandler(
   async (req: Request, res: Response) => {
     const { email, code } = verifyVerificationCodeSchema.parse(req.body);
@@ -149,17 +128,6 @@ export const resetPassword = asyncHandler(
       .cookie("accessToken", accessToken, cookieOptions)
       .cookie("refreshToken", refreshToken, cookieOptions)
       .json(new ApiResponse(200, {}, "Password reset successfully"));
-  },
-);
-
-export const getCurrentUser = asyncHandler(
-  async (req: Request, res: Response) => {
-    const userId = req.user!._id;
-    const user = await getCurrentUserService(userId);
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, user, "Current user fetched successfully"));
   },
 );
 
