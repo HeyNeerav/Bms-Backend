@@ -32,6 +32,9 @@ export interface IUser {
   passwordResetToken?: string | undefined;
   passwordResetTokenExpiry?: Date | undefined;
 
+  createdAt: Date;
+  updatedAt: Date;
+
   generateAccessToken: () => string;
   generateRefreshToken: () => string;
   isPasswordCorrect: (password: string) => Promise<boolean>;
