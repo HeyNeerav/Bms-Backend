@@ -24,6 +24,9 @@ export interface IBusiness {
   };
   isArchived: boolean;
   metadata?: Record<string, unknown>;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type IBusinessDocument = HydratedDocument<IBusiness>;
