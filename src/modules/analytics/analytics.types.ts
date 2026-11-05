@@ -60,11 +60,18 @@ export interface RecentSale {
   clientName: string;
 }
 
+export interface RevenueByPaymentMethod {
+  method: string;
+  revenue: number;
+  transactions: number;
+}
+
 export type TrendResult = RevenueTrendItem[];
 export type InvoiceStatResult = InvoiceStatusStat[];
 export type TopClientResult = TopClient[];
 export type TopProductResult = TopProduct[];
 export type RecentSaleResult = RecentSale[];
+export type RevenueByPaymentMethodResult = RevenueByPaymentMethod[];
 
 export type RevenueResult = {
   total: number;
@@ -90,4 +97,5 @@ export interface Analytics {
   topClients: TopClientResult;
   topProducts: TopProductResult;
   recentSales: RecentSaleResult;
+  revenueByPaymentMethod: RevenueByPaymentMethodResult;
 }

@@ -18,46 +18,50 @@ export const getDateRange = (
   now = new Date(),
   lifetimeStartDate = new Date(0),
 ): DateRange => {
-  const endDate = now;
+  const today = startOfUtcDay(now);
+  const currentMonth = startOfUtcMonth(now);
+  const currentYear = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+
   let startDate = new Date(lifetimeStartDate);
+  let endDate = today;
 
   switch (period) {
     case "7d":
-      startDate = startOfUtcDay(now);
-      startDate.setUTCDate(startDate.getUTCDate() - 6);
+      startDate = new Date(today);
+      startDate.setUTCDate(startDate.getUTCDate() - 7);
       break;
 
     case "30d":
-      startDate = startOfUtcDay(now);
-      startDate.setUTCDate(startDate.getUTCDate() - 29);
+      startDate = new Date(today);
+      startDate.setUTCDate(startDate.getUTCDate() - 30);
       break;
 
     case "90d":
-      startDate = startOfUtcDay(now);
-      startDate.setUTCDate(startDate.getUTCDate() - 89);
+      startDate = new Date(today);
+      startDate.setUTCDate(startDate.getUTCDate() - 90);
       break;
 
     case "12m":
-      startDate = startOfUtcMonth(now);
-      startDate.setUTCMonth(startDate.getUTCMonth() - 11);
-      break;
-
-    case "12m":
-      startDate = new Date(now);
-      startDate.setUTCFullYear(startDate.getUTCFullYear() - 1);
+      startDate = new Date(currentMonth);
+      startDate.setUTCMonth(startDate.getUTCMonth() - 12);
+      endDate = currentMonth;
       break;
 
     case "thisYear":
-      startDate = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+      startDate = currentYear;
+      endDate = currentMonth;
       break;
 
     case "lastYear":
-      startDate = new Date(Date.UTC(now.getUTCFullYear() - 1, 0, 1));
-      endDate.setTime(Date.UTC(now.getUTCFullYear(), 0, 1) - 1);
+      startDate = new Date(
+        Date.UTC(now.getUTCFullYear() - 1, 0, 1),
+      );
+      endDate = currentYear;
       break;
 
     case "lifetime":
       startDate = new Date(lifetimeStartDate);
+      endDate = currentMonth;
       break;
   }
 
@@ -119,7 +123,7 @@ export const getTrendBuckets = (
   const lastDate =
     unit === "day" ? startOfUtcDay(endDate) : startOfUtcMonth(endDate);
 
-  while (cursor <= lastDate) {
+  while (cursor < lastDate) {
     const key = getBucketKey(cursor, unit);
 
     buckets.push({

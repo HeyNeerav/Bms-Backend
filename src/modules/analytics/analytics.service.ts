@@ -13,6 +13,7 @@ import type {
   Analytics,
   InvoiceStatResult,
   RecentSaleResult,
+  RevenueByPaymentMethodResult,
   RevenueResult,
   TopClientResult,
   TopProductResult,
@@ -61,7 +62,7 @@ export const getAnalytics = async (
     {
       $match: {
         ...successfulPaymentFilter,
-        paidAt: { $gte: startDate, $lte: endDate },
+        paidAt: { $gte: startDate, $lt: endDate },
       },
     },
     {
@@ -157,7 +158,7 @@ export const getAnalytics = async (
     {
       $match: {
         ...activeBusinessFilter,
-        issuedDate: { $gte: startDate, $lte: endDate },
+        issuedDate: { $gte: startDate, $lt: endDate },
       },
     },
     {
@@ -184,7 +185,7 @@ export const getAnalytics = async (
     {
       $match: {
         ...successfulPaymentFilter,
-        paidAt: { $gte: startDate, $lte: endDate },
+        paidAt: { $gte: startDate, $lt: endDate },
       },
     },
     {
@@ -209,11 +210,36 @@ export const getAnalytics = async (
     { $sort: { date: 1 } },
   ];
 
+  const revenueByPaymentMethodPipeline: PipelineStage[] = [
+    {
+      $match: {
+        ...successfulPaymentFilter,
+        paidAt: { $gte: startDate, $lt: endDate },
+      },
+    },
+    {
+      $group: {
+        _id: "$method",
+        revenue: { $sum: "$amount" },
+        transactions: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        method: "$_id",
+        revenue: 1,
+        transactions: 1,
+      },
+    },
+    { $sort: { revenue: -1 } },
+  ];
+
   const topClientsPipeline: PipelineStage[] = [
     {
       $match: {
         ...successfulPaymentFilter,
-        paidAt: { $gte: startDate, $lte: endDate },
+        paidAt: { $gte: startDate, $lt: endDate },
       },
     },
     {
@@ -269,7 +295,7 @@ export const getAnalytics = async (
     {
       $match: {
         ...activeBusinessFilter,
-        issuedDate: { $gte: startDate, $lte: endDate },
+        issuedDate: { $gte: startDate, $lt: endDate },
         status: {
           $nin: [INVOICE_STATUS.DRAFT, INVOICE_STATUS.CANCELLED],
         },
@@ -348,6 +374,7 @@ export const getAnalytics = async (
     outstandingResult,
     invoiceStats,
     revenueTrendResult,
+    revenueByPaymentMethod,
     topClients,
     topProducts,
     recentSales,
@@ -367,6 +394,9 @@ export const getAnalytics = async (
     Invoice.aggregate<RevenueResult[number]>(outstandingPipeline),
     Invoice.aggregate<InvoiceStatResult[number]>(invoiceStatsPipeline),
     Payment.aggregate<TrendResult[number]>(revenueTrendPipeline),
+    Payment.aggregate<RevenueByPaymentMethodResult[number]>(
+      revenueByPaymentMethodPipeline,
+    ),
     Payment.aggregate<TopClientResult[number]>(topClientsPipeline),
     Invoice.aggregate<TopProductResult[number]>(topProductsPipeline),
     Payment.aggregate<RecentSaleResult[number]>(recentSalesPipeline),
@@ -388,7 +418,7 @@ export const getAnalytics = async (
     Client.countDocuments(activeBusinessFilter),
     Client.countDocuments({
       ...activeBusinessFilter,
-      createdAt: { $gte: startDate, $lte: endDate },
+      createdAt: { $gte: startDate, $lt: endDate },
     }),
     Product.countDocuments({
       ...activeBusinessFilter,
@@ -436,6 +466,7 @@ export const getAnalytics = async (
       trendUnit,
       revenueTrendResult,
     ),
+    revenueByPaymentMethod,
     invoiceStats,
     topClients,
     topProducts,
