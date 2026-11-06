@@ -1,25 +1,25 @@
 export function maskEmail(email: string | null | undefined): string {
-  if (!email || !email.includes('@')) {
-    return '';
+  if (!email) {
+    return "";
+  }
+  const lastAtIndex = email.lastIndexOf("@");
+  if (lastAtIndex <= 0 || lastAtIndex === email.length - 1) {
+    return "";
   }
 
-  const parts = email.split('@');
-  const localPart = parts[0];
-  const domain = parts[1];
+  const localPart = email.slice(0, lastAtIndex);
+  const domain = email.slice(lastAtIndex + 1);
 
-  if (!localPart || !domain) {
-    return '';
-  }
-
-  const len: number = localPart.length;
-  let maskedLocal: string = '';
+  const len = localPart.length;
+  let maskedLocal = "";
 
   if (len <= 2) {
-    maskedLocal = localPart.slice(0, 1) + '*'.repeat(len - 1);
+    maskedLocal = localPart.charAt(0) + "*".repeat(len - 1);
   } else if (len <= 5) {
-    maskedLocal = localPart.charAt(0) + '*'.repeat(len - 2) + localPart.charAt(len - 1);
+    maskedLocal =
+      localPart.charAt(0) + "*".repeat(len - 2) + localPart.charAt(len - 1);
   } else {
-    maskedLocal = localPart.slice(0, 2) + '***' + localPart.charAt(len - 1);
+    maskedLocal = localPart.slice(0, 2) + "***" + localPart.charAt(len - 1);
   }
 
   return `${maskedLocal}@${domain}`;

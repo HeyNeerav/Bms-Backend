@@ -8,6 +8,7 @@ import type { BusinessRole } from "@/consts.js";
 import { ApiError } from "@/shared/utils/ApiError.js";
 import { User } from "../user/User.model.js";
 import { escapeRegex } from "@/shared/utils/escapeRegex.js";
+import { maskEmail } from "@/shared/utils/maskEmail.js";
 
 type WorkspaceContext = UserIdParam & {
   currUserRole: string;
@@ -156,6 +157,17 @@ export const findBusinessMembers = async (payload: FindMembersPayload) => {
     limit: options.limit || 10,
     countQuery: BusinessMember.aggregate(pipeline)
   });
+
+
+  if (members.docs.length > 0) { 
+    members.docs = members.docs.map(member => {
+      if (member.user) {
+        member.user.email = member.user.email ? maskEmail(member.user.email) : "";
+      }
+      return member;
+    });
+  }
+
 
   return members;
 };
