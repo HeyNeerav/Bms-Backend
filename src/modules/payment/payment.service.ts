@@ -41,6 +41,10 @@ export const createPayment = async (
     throw new ApiError(400, "Invoice has already been paid");
   }
 
+  if (invoice.total !== amount) {
+    throw new ApiError(400, "Payment amount does not match invoice total");
+  }
+
   let payment: IPaymentDocument | undefined;
 
   const session = await startSession();
