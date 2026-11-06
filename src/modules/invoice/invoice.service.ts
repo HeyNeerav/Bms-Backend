@@ -267,8 +267,8 @@ export const updateInvoice = async (payload: UpdateInvoicePayload) => {
     throw new ApiError(404, "Invoice not found");
   }
 
-  if (["PAID", "CANCELLED"].includes(invoice.status)) {
-    throw new ApiError(400, "Cannot update a paid or cancelled invoice");
+  if (!["DRAFT"].includes(invoice.status)) {
+    throw new ApiError(400, "Only draft invoices can be updated");
   }
 
   if (discount !== undefined) {
@@ -343,8 +343,8 @@ export const changeInvoiceStatus = async ({
     throw new ApiError(400, "status is required");
   }
 
-  if (!["DRAFT", "SENT", "PAID", "OVERDUE", "CANCELLED"].includes(status)) {
-    throw new ApiError(400, "Invalid invoice status");
+  if (!["SENT", "CANCELLED"].includes(status)) {
+    throw new ApiError(400, "You can only change status to SENT or CANCELLED");
   }
 
   const invoice = await Invoice.findOne({
@@ -357,19 +357,23 @@ export const changeInvoiceStatus = async ({
     throw new ApiError(404, "Invoice not found");
   }
 
-  if (["CANCELLED", "PAID"].includes(invoice.status)) {
-    throw new ApiError(400, "Cannot change status of a paid or cancelled invoice");
+  if (!["DRAFT", "SENT"].includes(invoice.status)) {
+    throw new ApiError(400, "You can only change status of DRAFT or SENT invoices");
   }
 
   if (invoice.status === status) {
     throw new ApiError(400, `Invoice is already in ${status} status`);
   }
 
-  invoice.status = status;
-
-  if (invoice.status === INVOICE_STATUS.PAID) {
-    invoice.paidAt = new Date();
+  if (status === "SENT" && invoice.status !== "DRAFT") {
+    throw new ApiError(400, "You can only change status to SENT from DRAFT");
   }
+
+  if (status === "CANCELLED" && invoice.status !== "SENT") {
+    throw new ApiError(400, "You can only change status to CANCELLED from SENT");
+  }
+
+  invoice.status = status;
 
   await invoice.save();
 
@@ -379,7 +383,7 @@ export const changeInvoiceStatus = async ({
     }).select("name").lean();
 
     await resend.emails.send({
-      from: `${business?.name || "Your Company"} <send@no-reply.nhero.me>`,
+      from: `${business?.name || "Your Company"} <invoice@bms.heyneerav.tech>`,
       to: invoice.client.email,
       subject: `Invoice ${invoice.invoiceNumber} from ${business?.name || "Your Company"}`,
       template: {
