@@ -212,11 +212,13 @@ export const sendVerficationEmail = async(
     });
 
     if (error) {
+      console.log("Error from resend: ", error);
       throw new ApiError(500, "Error while sending verification email");
     }
 
     return data;
   } catch (error) {
+    console.log("/auth/verify/send Error: ", error);
     throw new ApiError(500, "Error while sending verification email");
   }
 }
