@@ -1,69 +1,64 @@
 # Business Management System — Backend
 
-This is the backend for the Business Management System (BMS). It provides APIs for managing businesses, clients, products, invoices, and payments.
+Backend for a full-stack Business Management System. It provides APIs for managing businesses, team members, clients, products, invoices, and payments.
 
-The project uses Express and TypeScript, with MongoDB for storing data. Users can manage multiple businesses, and each business has its own members and permissions.
+Built with Express, TypeScript, and MongoDB. Supports multiple businesses with separate data and member roles.
 
-**Frontend repository:** [Business Management Dashboard](https://github.com/HeyNeerav/Business-Management-Dashboard)
+**Frontend:** [Bms Frontend](https://github.com/HeyNeerav/Bms-Frontend)
+
+## Screenshots
+![Dashboard](public/showcase/dashboard.png)
+![Clients](public/showcase/clients.png)
+![Invoice Pdf](public/showcase/invoice-pdf.png)
 
 ## Tech Stack
 
-- Node.js
-- TypeScript
+- Node.js and TypeScript
 - Express 5
 - MongoDB and Mongoose
-- JWT and Passport.js
-- Google OAuth 2.0
+- JWT and Google OAuth
 - Zod
 - Cloudinary and Multer
 - Resend
 - Puppeteer and Handlebars
 - Vitest and Supertest
-- pnpm
 
 ## Features
 
-- User registration and login
-- Google login
-- Business and team management
-- Different roles for business members
+- User authentication and Google login
+- Multiple business management
+- Team members and role-based access
 - Client management
 - Product and service management
 - Invoice creation and PDF generation
-- Automatic invoice numbering
-- Payment recording
-- Business statistics
-- Product image uploads
-- Password reset emails
+- Payment tracking
+- Business analytics
+- Image uploads
 - Search and pagination
-- Request validation
 - Automated tests
 
 ## Getting Started
 
 ### Requirements
 
-Before running the project, install or set up:
-
 - Node.js
 - pnpm
-- MongoDB configured as a replica set
-- A Cloudinary account
-- A Resend account
-- Google OAuth credentials if you want Google login
+- MongoDB replica set
+- Cloudinary account
+- Resend account
 
-MongoDB needs replica set support for database transactions.
+Google OAuth credentials are required if you want to use Google login.
 
 ### Installation
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/HeyNeerav/Bms-Backend.git
+git clone https://github.com/NHeroOP/Bms-Backend.git
 cd Bms-Backend
 ```
 
-Install the dependencies:
+Install dependencies:
 
 ```bash
 pnpm install
@@ -75,18 +70,19 @@ Create your environment file:
 cp .env.example .env
 ```
 
-Open `.env` and add the required values.
+Add the required environment variables to `.env`.
 
-### Run in Development
+Start the development server:
 
 ```bash
 pnpm run dev
 ```
+
 ## Docker
 
-The repository includes Docker configuration for mongodb aswell.
+The repository includes Docker configuration for MongoDB and Mongo Express.
 
-Create a mongo-keyfile:
+Create a MongoDB keyfile:
 
 ```bash
 openssl rand -base64 756 > mongo-keyfile
@@ -94,17 +90,13 @@ chmod 400 mongo-keyfile
 sudo chown 999:999 mongo-keyfile
 ```
 
-Run the container:
+Start the containers:
 
 ```bash
 docker compose up -d mongo mongo-express
 ```
 
-Make sure the required environment variables and database connection are configured.
-
 ## Project Structure
-
-The backend is divided into modules, with each module handling a different part of the application.
 
 ```text
 src/
@@ -124,109 +116,47 @@ src/
 └── server.ts
 ```
 
-The modules contain the code for their features, such as routes, controllers, services, validation, and database models.
-
 ## API Routes
 
-All API routes use the `/api/v1` prefix.
+All routes use the `/api/v1` prefix.
 
-| Route | Purpose |
-|---|---|
-| `/auth` | Login and account management |
-| `/users` | User management |
-| `/businesses` | Business management |
-| `/business-members` | Business members and roles |
-| `/clients` | Client management |
-| `/products` | Product and service management |
-| `/invoices` | Invoice management |
-| `/payments` | Payment management |
-| `/analytics` | Business statistics |
-| `/health` | Health check |
+| Route               | Description           |
+| ------------------- | --------------------- |
+| `/auth`             | Authentication        |
+| `/users`            | User management       |
+| `/businesses`       | Business management   |
+| `/business-members` | Team management       |
+| `/clients`          | Client management     |
+| `/products`         | Products and services |
+| `/invoices`         | Invoice management    |
+| `/payments`         | Payment management    |
+| `/analytics`        | Business analytics    |
+| `/health`           | Health check          |
 
-## Authentication
+## Authentication and Business Access
 
-Protected routes require a valid access token.
+Protected routes require a valid access token, sent through an HTTP-only cookie or the `Authorization` header.
 
-The token can be sent through the access token cookie or the `Authorization` header.
-
-For Bearer token authentication:
-
-```http"
-Authorization: Bearer <access-token>
-```
-
-The backend also supports Google login.
-
-## Business Access
-
-Business-specific requests use the `x-business-id` header to identify the business.
+Business-specific requests use the `x-business-id` header:
 
 ```http
 x-business-id: <business-id>
 ```
 
-The backend checks whether the logged-in user belongs to that business and has permission to perform the requested action.
+The backend checks business membership and permissions before allowing access.
 
-Supported roles are:
+Available roles:
 
 - `OWNER`
 - `ADMIN`
 - `EMPLOYEE`
 
-A user can have different roles in different businesses.
-
-## Database
-
-MongoDB stores users, businesses, team members, clients, products, invoices, and payments.
-
-Business memberships are stored separately, allowing users to join multiple businesses.
-
-Invoice items keep the product details and prices used when the invoice was created. Changing a product's price later does not change an existing invoice.
-
-Invoice numbers are generated using a counter to avoid duplicate numbers when invoices are created at the same time.
-
-Database transactions are used when multiple changes need to succeed together.
-
-## File Uploads and PDFs
-
-Cloudinary is used to store uploaded images, and Multer handles file uploads.
-
-Invoice PDFs are generated using Puppeteer and Handlebars.
-
-## Email
-
-Resend is used to send emails, including password reset emails.
-
-Configure the required values in `.env` before using these features.
-
-## Validation and Error Handling
-
-Zod is used to check incoming request data.
-
-The backend also uses shared utilities to handle errors and return API responses.
-
-Protected routes check authentication, business membership, and permissions on the server.
-
 ## Testing
 
-The project uses Vitest, Supertest, and MongoDB Memory Server.
-
-Run the tests with:
+Run the test suite with:
 
 ```bash
 pnpm run test
 ```
 
-MongoDB Memory Server is also used for tests that need database transactions.
-
-## Development Notes
-
-When adding new features:
-
-- Keep related code in the correct module.
-- Validate incoming request data.
-- Keep business logic in services.
-- Check user permissions before allowing access to business data.
-- Calculate invoice totals on the backend.
-- Use transactions when related database changes must succeed together.
-- Add tests for important features.
+Uses Vitest, Supertest, and MongoDB Memory Server.
